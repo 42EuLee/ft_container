@@ -52,10 +52,8 @@ void    RBT<T, Alloc>::insert(value_type value)
     Node<T> *newnode = this->_node_alloc.allocate(1);
     Node<T> *iter;
     Node<T> *iter2;
-    newnode->_color = 'b';
     newnode->_data = value;
-    newnode->_left = NULL;
-    newnode->_right = NULL;
+ 
     iter = root;
     iter2 = NULL;
 

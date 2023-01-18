@@ -14,25 +14,31 @@ namespace ft
 	template <class T>
 	struct Node
 	{
+		enum	Color {RD, BLK};
+
+		typedef T		data_type;
+		typedef Node*	node_pointer;
+		typedef Color	color;
+
 		T       _data;
-		char 	_color;
+		Color	_color;
 		Node    *_left;
 		Node    *_right; 
 		Node    *_parent;
 
-		Node()
+		Node() : _left(NULL), _right(NULL), _parent(NULL), _data(), _color(BLK)
 		{
 			cout << "Node constructor called" << endl;
 		}
-		// Node(T *data, char color, Node *left, Node *right, Node *parent) :
-		// 	_data(data),
-		// 	_color(color),
-		// 	_left(left),
-		// 	_right(right),
-		// 	_parent(parent)
-		// {
-		// 	cout << "Node constructor called" << endl;
-		// }
+		Node(T *data, char color, Node *left, Node *right, Node *parent) :
+			_data(data),
+			_color(color),
+			_left(left),
+			_right(right),
+			_parent(parent)
+		{
+			cout << "Node constructor called" << endl;
+		}
 	};
 
 	template <class T, class Alloc = std::allocator<T> >

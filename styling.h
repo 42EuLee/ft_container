@@ -13,7 +13,6 @@
 # define WHT "\033[037m"
 # define RESET "\033[0m"
 
-
 // # define BOLD "\033[1m"
 
 # define RST  "\x1B[0m"
@@ -25,7 +24,6 @@
 # define KCYN  "\x1B[36m"
 # define KWHT  "\x1B[37m"
 # define TEST  "\e[38;5;166m"
-
 
 # define BOLD "\x1B[1m"
 # define UNDL "\x1B[4m"
