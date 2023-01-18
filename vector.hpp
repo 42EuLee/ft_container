@@ -127,11 +127,11 @@ namespace ft
 	// bool	operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
 	// bool	operator==(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
 	// bool	operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	class	MaxAmountReached : public std::exception
-	{
-		public:
-			virtual const char	*what(void) const throw();
-	};
+		class	MaxAmountReached : public std::exception
+		{
+			public:
+				virtual const char	*what(void) const throw();
+		};
 	};
 
 }

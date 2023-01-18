@@ -492,11 +492,12 @@ void    redblacktree(int flag)
 {
     if (flag != 1)
         return ;
-    cout << "hi" << endl;
+    
     ft::RBT<int> hi;
+    // ft::Node<int> node(int, 'r', NULL, NULL, NULL);
+    // ft::RBT<int>::Node hia;
     // RBT();
-    hi.testmymom();
-
+    hi.insert(5);
 }
 
 int main()
@@ -514,5 +515,5 @@ int main()
     member_functions_test(0);
     redblacktree(1);
 
-
+    // system("leaks vector");
 }
