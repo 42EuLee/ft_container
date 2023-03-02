@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include "remove_const.hpp"
 #include "vectorIterator.hpp"
 #include "reverseIterator.hpp"
 #include "is_integral.hpp"
@@ -50,13 +51,10 @@ namespace ft
 			size_type		_size;
 			allocator_type	_alloc;
 
-
-
-
 		/* Member functions */
 
 			template <class InputIterator>
-			void					assign(InputIterator first, InputIterator last);
+			void					assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0);
 			void					assign(size_type n, const value_type& val);
 			reference				at(size_type n);
 			const_reference 		at(size_type n) const;
@@ -65,7 +63,7 @@ namespace ft
 			iterator				begin();
 			const_iterator			begin() const;
 			size_type				capacity() const;
-			void					clear() const;
+			void					clear();
 			bool					empty() const;
 			iterator				end();
 			const_iterator			end() const;
@@ -93,39 +91,13 @@ namespace ft
 			const_reference			operator[](size_type n) const;
 			vector<T, Alloc>&		operator=(const vector& x);
 
+			    
+			void iwillkilleulee()
+			{
+				for (iterator it = begin(); it != end(); it++)
+					cout << *it << endl;
+			}
 
-	// vector::at // done
-	// vector::back // done
-	// vector::begin // done
-	// vector::capacity // done
-	// vector::clear //done
-	// vector::empty // done
-	// vector::end // done
-	// vector::erase // done
-	// vector::front // done
-	// vector::get_allocator // done
-	// vector::insert // done
-	// vector::max_size // done
-	// vector::operator[] // done
-	// vector::operator= // done
-	// vector::pop_back // done
-	// vector::push_back // done
-	// vector::reserve // done
-	// vector::resize // done
-	// vector::size // done
-
-	// vector::assign // not done
-	// vector::swap // nope
-	// vector::rbegin // nope
-	// vector::rend // nope
-
-
-	// bool	operator<(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	// bool	operator>(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	// bool	operator<=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	// bool	operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	// bool	operator==(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
-	// bool	operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs);
 		class	MaxAmountReached : public std::exception
 		{
 			public:
@@ -135,7 +107,6 @@ namespace ft
 
 }
 
-// #include "iterator.hpp"
 #include "vector.tpp"
 #include "vectorIterator.tpp"
 

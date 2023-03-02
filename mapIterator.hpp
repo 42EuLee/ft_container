@@ -4,61 +4,59 @@
 #include <iostream>
 #include <algorithm>
 #include "iterator_traits.hpp"
+#include "remove_const.hpp"
+#include "rbt.hpp"
+// #include "map.hpp"
 
 using std::cout;
 using std::endl;
 
 namespace ft
-{    
+{
 
-    template <typename T>
+    template <class T>
     struct mapIterator
     {
-        typedef typename ft::iteratorTraits<T *>::difference_type difference_type;
-        typedef typename ft::iteratorTraits<T *>::value_type value_type;
-        typedef typename ft::iteratorTraits<T *>::pointer pointer;
-        typedef typename ft::iteratorTraits<T *>::reference reference;
-	    typedef typename ft::iteratorTraits<T *>::iterator_category iterator_category;
+        typedef bidirectional_iterator_tag                          iterator_category;
+        typedef ptrdiff_t                                           difference_type;
+        typedef T                                                   value_type;
+        // typedef Node<typename ft::remove_const<value_type>::type>   node_ptr;
+        typedef Node<typename ft::remove_const<value_type>::type>   node_ptr;
+        typedef T*                                                  pointer;
+        typedef T&                                                  reference;
 
-        pointer _ptr;
+        mapIterator();
+        // mapIterator(pointer ref);
+        mapIterator(node_ptr *node);
+        mapIterator(mapIterator<typename ft::remove_const<value_type>::type> const &ref);
 
-        vectorIterator();
-        vectorIterator(pointer);
-        vectorIterator(const vectorIterator &ref);
+        ~mapIterator();
 
-        ~vectorIterator();
+        reference operator*() const;
+        pointer operator->() const;
 
-        reference operator*();
-        pointer operator->();
+        mapIterator operator-(int) const;
+        mapIterator operator+(int) const;
 
-        vectorIterator& operator++();
-        vectorIterator operator++(int);
+        mapIterator& operator++();
+        mapIterator operator++(int);
 
     
-        vectorIterator& operator--();
-        vectorIterator operator--(int);
+        mapIterator& operator--();
+        mapIterator operator--(int);
 
-        vectorIterator& operator+=(difference_type);
-        vectorIterator& operator-=(difference_type);
+        mapIterator& operator+=(difference_type);
+        mapIterator& operator-=(difference_type);
 
         reference operator[](difference_type);
-        vectorIterator &operator=(const vectorIterator &ref );
-        
-        // bool operator<(vectorIterator<T> &ops);
-        // bool operator>(vectorIterator<T> &ops);
-        // bool operator<=(vectorIterator<T> &ops);
-        // bool operator>=(vectorIterator<T> &ops);
-        // bool operator==(vectorIterator<T> &ops);
-        // bool operator!=(const vectorIterator &ops) { return (this->_ptr != ops._ptr); };
+        mapIterator &operator=(mapIterator<typename ft::remove_const<T>::type> const &ref);
+
+        node_ptr        *_node;
+        T               *_base;
 
     };
-    // template <typename T>
-    // vectorIterator<T> operator -(vectorIterator<T> a, typename vectorIterator<T>::difference_type b);
-
-    // template <typename T>
-    // vectorIterator<T> operator -(typename vectorIterator<T>::difference_type a, vectorIterator<T> b);
 }
 
-# include "vectorIterator.tpp"
+# include "mapIterator.tpp"
 
 #endif

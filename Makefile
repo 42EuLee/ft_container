@@ -1,6 +1,6 @@
-NAME	= vector
+NAME	= ft_container
 
-SRC		= main_test.cpp
+SRC		= main.cpp
 
 CC		= c++
 
@@ -15,15 +15,9 @@ all:	$(NAME)
 special: $(NAME2)
 
 test:	re
-	./vector
-
-test2:	re2
-	./vector
+	./ft_container
 
 $(NAME): $(SRC)
-	$(CC) $(FCFLAGS) $(SRC) -o $@
-
-$(NAME2): $(SRC)
 	$(CC) $(FCFLAGS) $(SRC) -o $@
 
 clean:
@@ -32,7 +26,5 @@ clean:
 fclean: clean
 
 re: fclean all
-
-re2 :fclean special
 
 .PHONY: all fclean clean re

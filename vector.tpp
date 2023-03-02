@@ -7,7 +7,7 @@ using namespace ft;
 template < class T, class Alloc > 
 vector<T, Alloc>::vector(const allocator_type& alloc) : _alloc(alloc)
 {
-    cout << GRN << "vector default constructor called" << RESET << endl;
+    // cout << GRN << "vector default constructor called" << RESET << endl
     this->_capacity = 0;
     this->_size = 0;
     this->_vector = this->_alloc.allocate(0);
@@ -17,7 +17,7 @@ vector<T, Alloc>::vector(const allocator_type& alloc) : _alloc(alloc)
 template < class T, class Alloc >
 vector<T, Alloc>::vector(size_t n, const value_type& val, const allocator_type& alloc) : _alloc(alloc)
 {
-    cout << GRN << "vector fill constructor called" << RESET << endl;
+    // cout << GRN << "vector fill constructor called" << RESET << endl;
     this->_size = n;
     if (this->_size > 0) // to prevent memleaks of ft::vector<int> realvector(0,100);
         this->_vector = this->_alloc.allocate(n);
@@ -31,39 +31,49 @@ template < class T, class Alloc >
 template <class InputIterator> 
 vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type& alloc, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type*) : _alloc(alloc)
 {
-    cout << GRN << "vector range constructor called" <<  RESET << endl;
-
+    // cout << GRN << "vector range constructor called" <<  RESET << endl;
     this->_capacity = 0;
-    this->_size = (size_type)(last - first);
-    this->_capacity = (size_type)(last - first);
+    this->_size = 0;
+    InputIterator temp;
+    temp = first;
+    while (first != last)
+    {
+        // cout << *first++ << endl;
+        first++;
+        this->_size++;
+    }
+    first = temp;
+    this->_capacity = this->_size;
     if (this->_size > 0) // to prevent memleaks of ft::vector<int> realvector(0,100);
         this->_vector = this->_alloc.allocate(this->_size);
-    for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.construct(this->_vector + i, *(first + i));
+    // while (first != last)
+    for (size_type i = 0; i < this->_size; i++)
+        this->_alloc.construct(this->_vector + i, *(first++));
+
 }
 
 /* Copy vector constructor */
 template < class T, class Alloc > 
 vector<T, Alloc >::vector (const vector& x)
 {
-    // cout << "Copy constructor called" << endl;
-    for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.destroy(this->_vector + i);
-    if (this->_capacity > 0)
-        this->_alloc.deallocate(this->_vector, this->_capacity); // check tmr
+    // cout << GRN << "Vector copy constructor called" << RESET << endl;
+    this->_size = x._size;
+    this->_capacity = x._capacity;
+    // for (size_t i = 0; i < this->_size; i++)
+    //     this->_alloc.destroy(this->_vector + i);
+    // if (this->_capacity > 0)
+    //     this->_alloc.deallocate(this->_vector, this->_capacity); // check tmr
     this->_alloc = x.get_allocator();
     this->_vector = this->_alloc.allocate(this->_capacity);
-    this->_capacity = x._capacity;
-    this->_size = x._size;
     for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.construct(this->_vector + i, x._vector + i);
+        this->_alloc.construct(this->_vector + i, *(x._vector + i));
 }
 
 /* Vector destructor */
 template < class T, class Alloc > 
 vector<T, Alloc>::~vector()
 {
-    cout << RED << "vector destructor called" << RESET << endl;
+    // cout << RED << "vector destructor called" << RESET << endl;
     for (size_t i = 0; i < this->_size; i++)
         this->_alloc.destroy(this->_vector + i);
     this->_alloc.deallocate(this->_vector, this->_capacity);
@@ -76,21 +86,30 @@ vector<T, Alloc>::~vector()
 */
 template < class T, class Alloc >
 template <class InputIterator>
-void vector<T, Alloc>::assign(InputIterator first, InputIterator last)
+void vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type*)
 {
-    cout << "range assign member function" << endl;
-    difference_type n = last - first;
+    // cout << "range assign member function" << endl;
+    size_t          count = 0;
+    InputIterator   temp;
+
+    temp = first;
+    while (first != last)
+    {
+        count++;
+        first++;
+    }
+    first = temp;
 
     for (size_t i = 0; i < this->_size; i++)
         this->_alloc.destroy(this->_vector + i);
-    if ((long)this->_size < n)
+    if (this->_size < count)
     {
-        this->reserve(n);
-        this->_capacity = n;
+        this->reserve(count);
+        this->_capacity = count;
     }
-    for (long i = 0; i < n ; i++)
-        this->_alloc.construct(this->_vector + i, *(first + i));
-    this->_size = n;
+    for (size_t i = 0; i < count ; i++)
+        this->_alloc.construct(this->_vector + i, *(first)++);
+    this->_size = count;
 }
 
 /*  2. Fill assign()
@@ -101,10 +120,10 @@ void vector<T, Alloc>::assign(InputIterator first, InputIterator last)
 template < class T, class Alloc > 
 void vector<T, Alloc>::assign(size_type n, const value_type& val)
 {
-    cout << "fill assign member function" << endl;
+    // cout << "fill assign member function" << endl;
     for (size_t i = 0; i < this->_size; i++)
         this->_alloc.destroy(this->_vector + i);
-    if ((long)this->_size < n)
+    if ((unsigned long)this->_size < n)
     {
         this->reserve(n);
         this->_capacity = n;
@@ -150,7 +169,6 @@ typename vector<T, Alloc>::const_reference   vector<T, Alloc>::back() const
 template < class T, class Alloc > 
 typename vector<T, Alloc>::iterator     vector<T, Alloc>::begin()
 {
-    // cout << "BEGINA()IDA)D" << endl;
     return(iterator(this->_vector));
 }
 
@@ -170,11 +188,15 @@ size_t vector<T, Alloc>::capacity() const
 
 /* 10. clear() const */
 template < class T, class Alloc >
-void    vector<T, Alloc>::clear() const
+void    vector<T, Alloc>::clear()
 {
+    // cout << "size" << this->_size << endl;
     for (size_t i = 0; i < this->_size; i++)
+    {
+        // cout << " hi " << endl;
         this->_alloc.destroy(this->_vector + i);
-    this->_alloc.deallocate(this->_vector, this->_size);
+    }
+    // this->_alloc.deallocate(this->_vector, this->_capacity);
     this->_size = 0;
 }
 
@@ -182,7 +204,7 @@ void    vector<T, Alloc>::clear() const
 template < class T, class Alloc >
 bool vector<T, Alloc>::empty() const
 {
-    return(this->_size > 0);
+    return(!(this->_size > 0));
 }
 
 /* 12. end() const */
@@ -203,25 +225,41 @@ typename vector<T, Alloc>::const_iterator     vector<T, Alloc>::end() const
 template < class T, class Alloc >
 typename vector<T, Alloc>::iterator    vector<T, Alloc>::erase(iterator position)
 {
-    for (iterator it = position; it < this->end() - 1; it++)
+    size_t count = 0;
+    iterator it = position;
+
+    this->_alloc.destroy(this->_vector + (position - this->begin()));
+    while (it != this->end())
+    {
         *it = *(it + 1);
-    this->_alloc.destroy(this->_vector + this->_size);
+        count++;
+        it++;
+    }
     this->_size--;
-    return (this->begin() + this->_size);
+    return (it - count);
 }
 
 /* 15. range erase() */
 template < class T, class Alloc >
 typename vector<T, Alloc>::iterator    vector<T, Alloc>::erase(iterator first, iterator last)
 {
-
+    size_t count = 0;
     difference_type diff = last - first;
+    difference_type ret = first - this->begin();
 
-    for (iterator it = last; it < this->end(); it++)
+    iterator it = last;
+
+    while (it != this->end())
+    {
         *(it - diff) = *it;
+        it++;
+    }
     for (difference_type i = 0; i < diff; i++)
+    {
         this->_alloc.destroy(this->_vector + --this->_size);
-    return (this->begin() + this->_size);
+        count++;
+    }
+    return (this->begin() + ret);
 }
 
 /* 16. front() */
@@ -266,17 +304,18 @@ void    vector<T, Alloc>::insert(iterator position, size_type n, const value_typ
     count = 0;
     if (n < 0)
         return ;
-    if (this->_size <= 0)
+    if (this->_size + n > this->_capacity)
     {
-        cout << "zsh: segmentation fault  ./vector" << endl;
-        exit (1);
+        if (this->_capacity * 2 < this->_size + n || this->_size == 0)
+            this->reserve(this->_size + n);
+        else
+            this->reserve(this->_capacity * 2);
     }
     temp = this->_alloc.allocate(this->_size);
     for (size_t i = 0; i < this->_size; i++)
         this->_alloc.construct(temp + i, this->_vector[i]);
-    if (this->_size + n > this->_capacity)
-        this->reserve(std::max(this->_capacity * 2, (this->_capacity * 2) + n));
     this->_size += n;
+
     for (size_t i = 0; i < this->_size; i++)
     { 
         // please later comment if not won't understand
@@ -303,52 +342,66 @@ template < class T, class Alloc >
 template <class InputIterator> 
 void    vector<T, Alloc>::insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type*)
 {
-    T                   *temp;
-    difference_type     count;
-    difference_type     diff = last - first;
+    // difference_type     count;
+    // difference_type     diff = last - first;
+    T                   *temp_vec;
     difference_type     start = position - this->begin();
-    difference_type     end = position - this->begin() + diff;
-    if (first >= last)
+    // size_t f = (size_t)first;
+    // size_t l = (size_t)last;
+
+    size_t  diff = 0;
+    size_t  count   = 0;
+
+    
+    // if (f >= l)
+    //     return ;
+
+    InputIterator temp;
+    temp = first;
+    while (first != last)
     {
-        return ;
+        first++;
+        diff++;
     }
+    difference_type     end = position - this->begin() + diff;
+    first = temp;
 
-    temp = this->_alloc.allocate(this->_size);
+    temp_vec = this->_alloc.allocate(this->_size);
     for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.construct(temp + i, this->_vector[i]);
-    // for (int i = 0; i < diff; i++)
-    //     this->_alloc.construct(temp + i, *(first + i));
-
+        this->_alloc.construct(temp_vec + i, this->_vector[i]);
     if (this->_size + diff > this->_capacity)
     {
-        cout << "reserve" << endl;
-        this->reserve(std::max(this->_capacity * 2, (this->_capacity * 2) + diff));
+        if (this->_capacity * 2 < this->_size + diff)
+            this->reserve(this->_size + diff);
+        else
+            this->reserve(this->_capacity * 2);
     }
-    count = 0;
     this->_size += diff;
     for (size_t i = 0; i < this->_size; i++)
     { 
         // please later comment if not won't understand
         if (count == diff)
         {
-            cout << "1" << endl;
+            // cout << "1" << endl;
             this->_alloc.destroy(this->_vector + i);
-            this->_alloc.construct(this->_vector + i, temp[i - diff]);
+            this->_alloc.construct(this->_vector + i, temp_vec[i - diff]);
         }
         else if (i >= (size_t)start && i <= (size_t)end)
         {
-            cout << "2" << endl;
+            // cout << "2" << endl;
             this->_alloc.destroy(this->_vector + i);
-            this->_alloc.construct(this->_vector + i, *(first + i)); // not workin
+            this->_alloc.construct(this->_vector + i, *first); // not workin
+            // cout << "here" << endl;
             count++;
+            first++;
         }
         else
-            cout << "3" << endl;
+            continue ;
     }
 
     for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.destroy(temp + i);
-    this->_alloc.deallocate(temp, this->_size - diff);
+        this->_alloc.destroy(temp_vec + i);
+    this->_alloc.deallocate(temp_vec, this->_size - diff);
     // destructing old vector and pointing it to the temp (replacing in a way )
 
 }
@@ -408,6 +461,7 @@ typename vector<T, Alloc>::reverse_iterator     vector<T, Alloc>::rbegin()
 template < class T, class Alloc > 
 typename vector<T, Alloc>::const_reverse_iterator     vector<T, Alloc>::rbegin() const
 {
+    // cout << " test begin" << endl;
     return(const_reverse_iterator(this->end()));
 }
 
@@ -449,9 +503,19 @@ void    vector<T, Alloc>::reserve(size_t n)
 template < class T, class Alloc >
 void    vector<T, Alloc>::resize(size_t n, value_type val)
 {
-    (void)val; // wtf
-    for (size_t i = n; i <= this->_size; i++)
-            this->_alloc.destroy(this->_vector + i);
+    // cout << "one" << endl;
+    if (n > this->_capacity) // change cap
+        this->reserve(std::max(this->_capacity * 2, n));
+    if (n < this->_size) // destroy the stuffs
+    {
+        for (size_t i = n; i <= this->_size; i++)
+                this->_alloc.destroy(this->_vector + i);
+    }
+    if (n > this->_size)
+    {
+        for (size_t i = this->_size; i < n; i++)
+            this->_alloc.construct(this->_vector + i, val);
+    }
     this->_size = n;
 }
 
@@ -470,6 +534,12 @@ void    vector<T, Alloc>::swap(vector& x)
     std::swap(this->_alloc, x._alloc);
     std::swap(this->_size, x._size);
     std::swap(this->_capacity, x._capacity);
+}
+
+template < class T, class Alloc >
+void    swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
+{
+    x.swap(y);
 }
 
 /* Operator overloads of vector*/
@@ -494,11 +564,11 @@ vector<T, Alloc>    &vector<T, Alloc>::operator=(const vector& x)
     if (this->_capacity > 0)
         this->_alloc.deallocate(this->_vector, this->_capacity);
     this->_alloc = x.get_allocator();
-    this->_vector = this->_alloc.allocate(this->_capacity);
     this->_capacity = x._capacity;
+    this->_vector = this->_alloc.allocate(this->_capacity);
     this->_size = x._size;
     for (size_t i = 0; i < this->_size; i++)
-        this->_alloc.construct(this->_vector + i, x._vector + i);
+        this->_alloc.construct(this->_vector + i, *(x._vector + i));
     return (*this);
 }
 
@@ -511,31 +581,30 @@ bool operator==(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 template <class T, class Alloc>
 bool operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 {
-    // return (!ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
     return(!(lhs == rhs));
 }
 
 template <class T, class Alloc>
 bool operator<(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 {
-    return ((lhs._size < rhs._size) && ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 }
 template <class T, class Alloc>
 bool operator<=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 {
-    return (!(rhs < lhs));
+    return (!(rhs < lhs) || (rhs == lhs));
 }
 
 template <class T, class Alloc>
 bool operator>(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 {
-    return ((lhs._size > rhs._size) && ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+    return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
 }
 	
 template <class T, class Alloc>
 bool operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
 {
-    return (!(rhs > lhs));
+    return (!(rhs > lhs) || (rhs == lhs));
 }
 
 #endif

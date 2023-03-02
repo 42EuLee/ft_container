@@ -1,116 +1,664 @@
+#include "vector.hpp"
+#include "rbt.hpp"
+#include "pair.hpp"
+#include "vectorIterator.hpp"
+#include <vector>
+#include "stack.hpp"
+#include <list>
 #include <iostream>
+#include "is_integral.hpp"
+#include "styling.h"
+#include <map>
+#include "map.hpp"
+#include <utility>
 #include <string>
-#include <deque>
-#if 1 //CREATE A REAL STL EXAMPLE
-	#include <map>
-	#include <stack>
-	#include <vector>
-	namespace ft = std;
+#include <string_view>
+#include "set.hpp"
+#define TESTED_TYPE int
+#define TESTED_NAMESPACE ft
+
+#define T1 char
+#define T2 int
+#define _pair TESTED_NAMESPACE::pair
+typedef _pair<const T1, T2> T3;
+
+#if defined(STD) 
+#include <vector>
+#define namespace std
 #else
-	#include <map.hpp>
-	#include <stack.hpp>
-	#include <vector.hpp>
+#include "vector.hpp"
+#include "vectorIterator.hpp"
+#define namespace ft
 #endif
 
-#include <stdlib.h>
-
-#define MAX_RAM 4294967296
-#define BUFFER_SIZE 4096
-struct Buffer
+void leak_test(int flag)
 {
-	int idx;
-	char buff[BUFFER_SIZE];
-};
+    if (flag != 1)
+        return ;
+    std::vector<int> myvector;
+    std::vector<int> copyvector;
+    myvector.push_back (100);
+    myvector.push_back (200);
+    myvector.push_back (300);
+
+    copyvector = myvector;
+
+    std::cout << "myvector contains:";
+    std::cout << "size: " << (int) myvector.size() << '\n';
+    std::cout << "capacity: " << (int) myvector.capacity() << '\n';
+    for (unsigned i=0; i<myvector.size(); i++)
+    std::cout << ' ' << myvector[i];
+    std::cout << '\n';
+
+    myvector.clear();
+    myvector.push_back (10);
+    myvector.push_back (20);
+
+    std::cout << "myvector contains:";
+    std::cout << "size: " << (int) myvector.size() << '\n';
+    std::cout << "capacity: " << (int) myvector.capacity() << '\n';
+    for (unsigned i=0; i<myvector.size(); i++)
+    std::cout << ' ' << myvector[i];
+    std::cout << '\n';
+
+    std::cout << "copyvector contains:";
+    std::cout << "size: " << (int) copyvector.size() << '\n';
+    std::cout << "capacity: " << (int) copyvector.capacity() << '\n';
+    for (unsigned i=0; i<copyvector.size(); i++)
+    std::cout << ' ' << copyvector[i];
+    std::cout << '\n';
 
 
-#define COUNT (MAX_RAM / (int)sizeof(Buffer))
+    // int arr[] = {1, 2, 3, 4, 5};
 
-template<typename T>
-class MutantStack : public ft::stack<T>
+    std::vector<int> v1(5);
+    std::vector<int> vtest(5);
+
+
+    /* assigned value to vector v1 */
+    for (size_t i = 0; i < v1.size(); ++i)
+        v1[i] = i + 1;
+    for (size_t i = 0; i < v1.size(); ++i)
+        vtest[i] = i + 5.5;
+    v1.reserve(6);
+    v1.reserve(1);
+    cout << "Capicity " << v1.capacity() << endl;
+    cout << "Size " << v1.size() << endl;
+
+    // int arr2[] = {1, 2, 3, 4, 5};
+
+    // std::vector<int> v2(v1.begin(), vtest.end());
+
+    for (size_t i = 0; i < v1.size(); ++i)
+        cout << v1[i] << endl;
+    copyvector.clear();
+    copyvector.push_back (10);
+    copyvector.push_back (20);
+
+    std::cout << "copyvector contains:";
+    std::cout << "size: " << (int) copyvector.size() << '\n';
+    std::cout << "capacity: " << (int) copyvector.capacity() << '\n';
+    for (unsigned i=0; i<copyvector.size(); i++)
+    std::cout << ' ' << copyvector[i];
+    std::cout << '\n';
+    // system("leaks Vector");
+}
+
+void resize_test(int flag)
 {
-public:
-	MutantStack() {}
-	MutantStack(const MutantStack<T>& src) { *this = src; }
-	MutantStack<T>& operator=(const MutantStack<T>& rhs) 
-	{
-		this->c = rhs.c;
-		return *this;
-	}
-	~MutantStack() {}
+    if (flag != 1)
+        return ;
 
-	typedef typename ft::stack<T>::container_type::iterator iterator;
+    std::vector<int> myvector;
+    cout << myvector[0] << endl; // SEGFAULT
+    // set some initial content:
+    for (int i=1;i<10;i++) 
+        myvector.push_back(i);
+    cout << "Size of real vector: " << myvector.size() << endl;
+    cout << "Capacity of my vector: " << myvector.capacity() << endl;
 
-	iterator begin() { return this->c.begin(); }
-	iterator end() { return this->c.end(); }
-};
+    myvector.resize(5);
+    myvector.resize(8,100);
+    myvector.resize(12);
 
-int main(int argc, char** argv) {
-	if (argc != 2)
-	{
-		std::cerr << "Usage: ./test seed" << std::endl;
-		std::cerr << "Provide a seed please" << std::endl;
-		std::cerr << "Count value:" << COUNT << std::endl;
-		return 1;
-	}
-	const int seed = atoi(argv[1]);
-	srand(seed);
+    cout << "Size of real vector: " << myvector.size() << endl;
+    cout << "Capacity of my vector: " << myvector.capacity() << endl;
 
-	ft::vector<std::string> vector_str;
-	ft::vector<int> vector_int;
-	ft::stack<int> stack_int;
-	ft::vector<Buffer> vector_buffer;
-	ft::stack<Buffer, std::deque<Buffer> > stack_deq_buffer;
-	ft::map<int, int> map_int;
+    std::cout << "myvector contains:";
+    for (int i=0;i<12;i++)
+        std::cout << ' ' << myvector[i];
+    // cout << myvector[15] << endl; // CONTAINER OVERFLOW fk
+    // cout << myvector[20] << endl; // HEAP BUFFER OVERFLOW fk
+    std::cout << '\n';
+}
 
-	for (int i = 0; i < COUNT; i++)
-	{
-		vector_buffer.push_back(Buffer());
-	}
+/* 1. Assign member function */
+void    assign_test(int flag)
+{
+    if (flag != 1)
+        return ;
 
-	for (int i = 0; i < COUNT; i++)
-	{
-		const int idx = rand() % COUNT;
-		vector_buffer[idx].idx = 5;
-	}
-	ft::vector<Buffer>().swap(vector_buffer);
+    /* Change test number for different test*/
+    int test_num = 2;
 
-	try
-	{
-		for (int i = 0; i < COUNT; i++)
-		{
-			const int idx = rand() % COUNT;
-			vector_buffer.at(idx);
-			std::cerr << "Error: THIS VECTOR SHOULD BE EMPTY!!" <<std::endl;
-		}
-	}
-	catch(const std::exception& e)
-	{
-		//NORMAL ! :P
-	}
-	
-	for (int i = 0; i < COUNT; ++i)
-	{
-		map_int.insert(ft::make_pair(rand(), rand()));
-	}
+    std::vector<int> vector(2,100);
+    std::vector<int> vector2(5,200);
+    std::vector<int> vector3(4,300);
+    // ft::vector<int> vector4(6,300);
 
-	int sum = 0;
-	for (int i = 0; i < 10000; i++)
-	{
-		int access = rand();
-		sum += map_int[access];
-	}
-	std::cout << "should be constant with the same seed: " << sum << std::endl;
 
-	{
-		ft::map<int, int> copy = map_int;
-	}
-	MutantStack<char> iterable_stack;
-	for (char letter = 'a'; letter <= 'z'; letter++)
-		iterable_stack.push(letter);
-	for (MutantStack<char>::iterator it = iterable_stack.begin(); it != iterable_stack.end(); it++)
-	{
-		std::cout << *it;
-	}
-	std::cout << std::endl;
+    /* (1) - Range assign */
+    if (test_num == 1 || test_num == 3)
+    {
+        cout << TEL << "---- RANGE assign test -----" << endl;
+        cout << ORG << "---Printing before assigning vector2---" <<  RESET << endl;
+        for (std::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+            cout << ' ' << *it;
+        cout << '\n';
+        cout << "Before Size of vector2: " << vector2.size() << endl;
+        cout << "Before Capacity of vector2: " << vector2.capacity() << endl;
+
+        std::vector<int>::iterator it = vector3.begin();
+        vector2.assign(it, vector3.end());
+
+
+        cout << ORG << "---Printing after assigning vector2---" <<  RESET << endl;
+        for (std::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+            cout << ' ' << *it;
+        cout << '\n';
+        cout << "After Size of vector2: " << vector2.size() << endl;
+        cout << "After Capacity of vector2: " << vector2.capacity() << endl;
+
+    }
+    /* (2) - Fill assign */
+    if (test_num == 2 || test_num == 3)
+    {
+        cout << TEL << "---- FILL assign test -----" << endl;
+        cout << ORG << "---Printing before assigning vector2---" <<  RESET << endl;
+        for (std::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+            cout << ' ' << *it;
+        cout << '\n';
+        cout << "Before Size of vector2: " << vector2.size() << endl;
+        cout << "Before Capacity of vector2: " << vector2.capacity() << endl;
+
+        vector2.assign(6, 420);
+
+        cout << ORG << "---Printing after assigning vector2---" <<  RESET << endl;
+        for (std::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+            cout << ' ' << *it;
+        cout << '\n';
+        cout << "After Size of vector2: " << vector2.size() << endl;
+        cout << "After Capacity of vector2: " << vector2.capacity() << endl;
+
+    }
+
+}
+
+void    swap_test(int flag)
+{
+    if (flag != 1)
+        return ;
+    cout << TEL << "----- swap test ----" << RESET << endl;
+    ft::vector<int> vector(2,100);
+    ft::vector<int> vector2(5,200);
+
+    cout << ORG << "---Printing vector 1---" <<  RESET << endl;
+    for (ft::vector<int>::iterator it = vector.begin(); it != vector.end(); ++it)
+        cout << ' ' << *it;
+    cout << '\n';
+    cout << "Before Size of vector: " << vector.size() << endl;
+    cout << "Before Capacity of vector: " << vector.capacity() << endl;
+    cout << "Before Address of vector: " << &vector << endl;
+    cout << ORG << "---Printing vector 2---" <<  RESET << endl;
+    for (ft::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+        cout << ' ' << *it;
+    cout << '\n';
+    cout << "Before Size of vector2: " << vector2.size() << endl;
+    cout << "Before Capacity of vector2: " << vector2.capacity() << endl;
+    cout << "Before Address of vector: " << &vector2 << endl;
+
+    cout << BLU << "-------Swapping vector1 and vector2------" <<   RESET << endl;
+    vector.swap(vector2);
+    cout << ORG << "---Printing vector 1---" <<  RESET << endl;
+    for (ft::vector<int>::iterator it = vector.begin(); it != vector.end(); ++it)
+        cout << ' ' << *it;
+    cout << '\n';
+    cout << "After Size of vector: " << vector.size() << endl;
+    cout << "After Capacity of vector: " << vector.capacity() << endl;
+    cout << "After Address of vector: " << &vector << endl;
+
+        cout << ORG << "---Printing vector 2---" <<  RESET << endl;
+    for (ft::vector<int>::iterator it = vector2.begin(); it != vector2.end(); ++it)
+        cout << ' ' << *it;
+    cout << '\n';
+    cout << "After Size of vector2: " << vector2.size() << endl;
+    cout << "After Capacity of vector2: " << vector2.capacity() << endl;
+    cout << "After Address of vector2: " << &vector2 << endl;
+}
+void    is_integral_test(int flag)
+{
+    if (flag != 1)
+        return ;
+    cout << std::boolalpha;
+    cout << "is_integral:" << endl;
+    cout << "char: " << std::is_integral<char>::value << endl;
+    cout << "int: " << ft::is_integral<int>::value << endl;
+    cout << "float: " << ft::is_integral<float>::value << endl;
+}
+
+void    legit_vector_test(int flag)
+{
+    if (flag != 1)
+        return ;
+    
+    ft::vector<int> realvector(1,100);
+    std::vector<int> anothervector(3,20);
+    std::vector<int> anothervector2(3,10);
+    ft::vector<int> rangevector(anothervector2.begin(),anothervector.end());
+    // std::vector<int> susvector(5, 69); // shoving 5 number 100s inside the vector;
+
+    cout << "----------------Printing what the shit vector does----------" << endl;
+    
+    // realvector.pop_back(); // this cause the vector to overflow
+    realvector.push_back(1); // push back causing leaks?
+    // realvector.reserve(20);
+    
+    cout << "Start Size of real vector: " << realvector.size() << endl;
+    cout << "Start Capacity of real vector: " << realvector.capacity() << endl;
+    // realvetor.erase(realvector.begin() + 1);
+    // realvector.erase(realvector.begin(), realvector.end() - 3);
+    // realvector.insert(realvector.begin(), 100); // DONE 1st
+    ft::vector<int>::iterator it = realvector.begin();
+    cout<< "Before: " << *it << endl;
+    realvector.insert(realvector.begin(), 3, 200); // Done 2nd
+    // realvector.insert(realvector.begin() + 2, 4, 300); // Done 2nd
+    // realvector.insert(realvector.begin(), anothervector.begin(), anothervector.end() - 1);
+    // cout <<"AFTER: " << *it << endl;
+
+
+    cout << "After Size of real vector: " << realvector.size() << endl;
+    cout << "After Capacity of real vector: " << realvector.capacity() << endl;
+
+
+    cout << "---Printing vector---" << endl;
+    for (ft::vector<int>::iterator it = realvector.begin(); it != realvector.end(); ++it)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+    cout << "---Printing range vector---" << endl;
+    for (ft::vector<int>::iterator it = rangevector.begin(); it != rangevector.end(); ++it)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+    cout << "-----------------------------------------------------------" << endl;
+    cout << "CHECK DESTRUCTOR" << endl;
+    // system("leaks vector");
+}
+
+void    reverse_iterator_test(int flag)  // dead
+{
+    if (flag != 1)
+        return ;
+    ft::vector<int> myvector (5);  // 5 default-constructed ints
+    ft::vector<int>::reverse_iterator rit = myvector.rbegin();
+    // ft::vector<int>::iterator it = myvector.begin();
+
+    // cout << *it << endl;
+    int  i = 0;
+
+    // for (std::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+    // {   
+    //     *it = i++; // assigning
+    //     cout << *it << endl;
+    // }
+
+    i = 0;
+    // ft::vector<int>::reverse_iterator rit = myvector.rbegin();
+
+    for (rit = myvector.rbegin(); rit != myvector.rend(); ++rit)
+    {   
+        *rit = i++; // assigning
+        // cout << "test" << endl;
+        cout << *rit << endl;
+    }
+
+    std::cout << "myvector contains:";
+    for (ft::vector<int>::iterator it = myvector.begin(); it < myvector.end(); ++it)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+
+    std::vector<int> myvector2 (5);  // 5 default-constructed ints
+    cout << "---Printing vector---" << endl;
+    for (std::vector<int>::iterator it = myvector2.end() - 1; it != myvector2.begin(); it--)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+
+    cout << "-----------------------------------------------------------" << endl;
+
+    int num1 = 2;
+
+    ft::vector<int>::iterator it(&num1);
+    ft::vector<int>::iterator it2(&num1);
+
+    cout << *it << endl;
+    cout << *it2 << endl;
+
+    cout << std::boolalpha << endl;
+    cout << (it != it2) << endl;
+
+    ft::vector<int>     vec(5,2);
+
+
+    if (vec.rbegin() != vec.rbegin())
+        cout << "not equal" << endl;
+    else
+        cout << " equal" << endl;
+    for (ft::vector<int>::reverse_iterator i = vec.rbegin(); i != vec.rend(); i++)
+        cout << *i << endl;
+}
+
+void    vector_operator_overload_test(int flag)
+{
+    if (flag != 1)
+        return ;
+
+    // std::Vector<int> derp; // DOESNT WORK BECAUSE OF THE CONST
+    ft::vector<int> derp(5,100);
+    int ptr[5] = {1,2,3,4,5};
+    ft::vectorIterator<int> ptr2(ptr);
+    ft::vectorIterator<int> ptr3(ptr);
+
+    // derp._vector[0] = 1;
+    derp.pop_back();
+    // cout << derp._vector[6] << endl;
+
+    cout << *ptr2 << endl;
+    ptr2 += 2;
+    cout << *ptr2 << endl;
+    ptr2 -= 2;
+    cout << *ptr2 << endl;
+    ptr2 =  1 + ptr2;
+    // ptr2 =  ptr2 - 1;
+
+    // ptr2 = ptr2 - ptr2;
+    cout << *ptr2 << endl;
+    ptr2--;
+    cout << *ptr2++ << endl;
+    cout << *ptr2 << endl;
+    cout << *ptr2 + *ptr3 << endl;
+    ptr2 = ptr2 - 1;
+    // if (ptr2 != ptr3)
+    //     cout << "hi\n";
+    // else
+    //     cout << "bye\n";
+}
+
+void    member_functions_test(int flag)
+{
+    // consist of at and back
+    if (flag != 1)
+        return ;
+    {
+        cout << "Testing member function vect::at/back" << endl;
+        std::vector<int> derp(1,100);
+        cout << derp.at(2) << endl;
+        cout << derp.back() << endl;
+
+        std::cout << "myvector contains:";
+        for (std::vector<int>::iterator it = derp.begin() ; it != derp.end(); ++it)
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+    }
+
+    // {
+    //     ft::vector<int> myvector;
+
+    //     // set some content in the vector:
+    //     for (int i=0; i<100; i++) myvector.push_back(i);
+
+    //     std::cout << "size: " << (int) myvector.size() << '\n';
+    //     std::cout << "capacity: " << (int) myvector.capacity() << '\n';
+    //     std::cout << "max_size: " << (int) myvector.max_size() << '\n';
+    // }
+
+
+}
+
+void    lexo_test(int flag)
+{
+    if (flag != 1)
+        return ;
+    int size = 5;
+    int size2 = 4;
+    int fill = 100;
+    int fill2 = 200;
+
+        // NOT DONE pls check thanks
+    {
+        cout << TEL << "––----- Lexographical operator test: std --------" << RESET << endl;
+
+        std::vector<int> vector(size, fill);
+        std::vector<int> vector2(size2,fill2);
+
+        cout << ORG << "==" << RESET << endl;
+        if (vector == vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No " << endl;
+        cout << ORG << "!=" << RESET << endl;
+        if (vector != vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << "<" << RESET << endl;
+        if (vector < vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        
+        cout << ORG << "<=" << RESET << endl;
+        if (vector <= vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << ">" << RESET << endl;
+        if (vector > vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << ">=" << RESET << endl;
+        if (vector >= vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+    }
+     {
+        cout << TEL << "––----- Lexographical operator test: ft --------" << RESET << endl;
+
+        ft::vector<int> vector(size, fill);
+        ft::vector<int> vector2(size2, fill2);
+
+        cout << ORG << "==" << RESET << endl;
+        if (vector == vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No " << endl;
+        cout << ORG << "!=" << RESET << endl;
+        if (vector != vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << "<" << RESET << endl;
+        if (vector < vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        
+        cout << ORG << "<=" << RESET << endl;
+        if (vector <= vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << ">" << RESET << endl;
+        if (vector > vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+        cout << ORG << ">=" << RESET << endl;
+        if (vector >= vector2)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+    }
+}
+
+
+void    redblacktree(int flag)
+{
+    if (flag != 1)
+        return ;
+    // ft::map<int,std::string> map2;
+    // std::map<int,std::string> stdmap;
+	// std::pair<std::map<int,std::string>::iterator, std::map<int, std::string>::iterator> ret;
+    // ft::pair<std::string , int> pair;
+
+
+    // ft::map<int,std::string> map;
+
+    // // hi.insertion(ft::make_pair(9, "a"));
+    // // hi.deletion(hi._root, 1);
+    // // cout << hi.treeSearch(hi._root, ft::make_pair(9, std::string()))->_data << endl;
+
+
+	// stdmap.insert(std::make_pair(9, "a"));
+	// stdmap.insert(std::make_pair(12, "a"));
+	// stdmap.insert(std::make_pair(15, "a"));
+	// stdmap.insert(std::make_pair(18, "a"));
+	// stdmap.insert(std::make_pair(21, "a"));
+
+
+    // ft::RBT<ft::pair<int, std::string> > rbt;
+
+	// rbt.insertion(ft::make_pair(9, "a"));
+
+    
+
+	// cout << stdmap.find(21)->first << endl;
+	// cout << stdmap.max_size() << endl;
+
+	// cout << stdmap.begin()->first << endl;
+	// cout << stdmap.upper_bound(20)->first << endl;
+
+
+
+    // ma(ft::make_pair(9, "a"));
+    // ma(ft::make_pair(8, "b"));
+    // ma(ft::make_pair(2, "c"));
+    // ma(ft::make_pair(4, "d"));
+    // ma(ft::make_pair(10, "e"));
+
+	// map(ft::make_pair(1, "a"));
+    // map(ft::make_pair(2, "b"));
+    // map(ft::make_pair(3, "c"));
+    // map(ft::make_pair(4, "d"));
+    // map(ft::make_pair(5, "e"));
+    // map2.rbt.printTree();
+    // map2.erase(1);
+    // ft::mapIterator<pair<const int, std::string> > it(map.rbt._root);
+    // ft::mapIterator<pair<const int, std::string> > it;
+    // ft::mapIterator<pair<const int, std::string> > itend;
+
+	// it = map2.begin();
+    // map2.erase(it);
+
+    // map2.rbt.printTree();
+
+	// cout << it->first << endl;
+	// itend = map2.end();
+
+
+	// map.insert(ft::make_pair(10, "asdas"));
+	// map.insert(it, itend);
+	// cout << map.max_size() << endl;
+
+	// map.clear();
+
+	// for (ft::mapIterator<pair<const int, std::string> > it = map.begin() ; it != map.end() ; it++)
+	// 	cout << it->first << endl;
+
+
+    // // cout << map.count(0) << endl; // work
+    // // map.insert(ft::make_pair(11, "4"));
+
+    // // cout << "Tree Min" << *map.rbt.treeMinimum(map.rbt._root)->_data << endl;
+    // map.rbt.printTree();
+	// cout << map.upper_bound(9)->first << endl;
+	// cout << it->first << endl;
+    // it = map.begin();
+    // cout << it->first << endl;
+    // it++;
+    // cout << it->first << endl;
+    // std::map<int, std::string> hi;
+
+}
+
+void map_functions(int flag)
+{
+    if (flag != 1)
+        return ;
+    
+    ft::map<int,std::string> map;
+
+    // ft::mapIterator<pair<const int, std::string> > it(map.rbt._root);
+    // cout << it->_first << endl;
+    // ++it;
+    // cout << it->_first << endl;
+    // ++it;
+
+    map.rbt.printBT("", map.rbt._root, false);
+    // cout << it->_first << endl;
+    // cout << it->_first << endl;
+
+
+    // cout << map.begin() << endl;
+    
+}
+
+void rbt_operators(int flag)
+{
+    if (flag != 1)
+        return ;
+    
+    // ft::map<int,std::string> map;
+    // ft::vector<int> derp(5,100);
+    // int ptr[5] = {1,2,3,4,5};
+    // ft::vectorIterator<int> ptr2(ptr);
+
+    // ma(ft::make_pair(9, "a"));
+    // ma(ft::make_pair(8, "a"));
+    // ma(ft::make_pair(2, "3"));
+    // ma(ft::make_pair(4, "4"));
+    // ma(ft::make_pair(10, "4"));
+    // // ft::mapIterator<Node<pair<const int, std::string > > > it(map.rbt._root);
+    // ptr2++;
+    // map++;
+    
+}
+
+int main()
+{
+     /* Select 0 or 1 to enable the code above*/
+    assign_test(0); // donezo
+    swap_test(0);
+    resize_test(0);
+    legit_vector_test(0);
+    is_integral_test(0);
+    reverse_iterator_test(0);
+    leak_test(0);
+    vector_operator_overload_test(0);
+    lexo_test(0);
+    member_functions_test(0);
+    redblacktree(0);
+    map_functions(0);
+    rbt_operators(0);
+
 	return (0);
 }
