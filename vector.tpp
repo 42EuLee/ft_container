@@ -10,7 +10,7 @@ vector<T, Alloc>::vector(const allocator_type& alloc) : _alloc(alloc)
     // cout << GRN << "vector default constructor called" << RESET << endl
     this->_capacity = 0;
     this->_size = 0;
-    this->_vector = this->_alloc.allocate(0);
+    this->_vector = 0;
 }
 
 /* Fill vector constructor */
@@ -18,6 +18,7 @@ template < class T, class Alloc >
 vector<T, Alloc>::vector(size_t n, const value_type& val, const allocator_type& alloc) : _alloc(alloc)
 {
     // cout << GRN << "vector fill constructor called" << RESET << endl;
+    this->check_max_size(n);
     this->_size = n;
     if (this->_size > 0) // to prevent memleaks of ft::vector<int> realvector(0,100);
         this->_vector = this->_alloc.allocate(n);
@@ -105,7 +106,7 @@ void vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename 
     if (this->_size < count)
     {
         this->reserve(count);
-        this->_capacity = count;
+        // this->_capacity = count;
     }
     for (size_t i = 0; i < count ; i++)
         this->_alloc.construct(this->_vector + i, *(first)++);
@@ -121,12 +122,13 @@ template < class T, class Alloc >
 void vector<T, Alloc>::assign(size_type n, const value_type& val)
 {
     // cout << "fill assign member function" << endl;
+    this->check_max_size(n);
     for (size_t i = 0; i < this->_size; i++)
         this->_alloc.destroy(this->_vector + i);
     if ((unsigned long)this->_size < n)
     {
         this->reserve(n);
-        this->_capacity = n;
+        // this->_capacity = n;
     }
     for (unsigned long i = 0; i < n ; i++)
         this->_alloc.construct(this->_vector + i, val);
@@ -296,6 +298,7 @@ typename vector<T, Alloc>::iterator     vector<T, Alloc>::insert(iterator positi
 template < class T, class Alloc >
 void    vector<T, Alloc>::insert(iterator position, size_type n, const value_type& val)
 {
+    this->check_max_size(n);
     T           *temp;
     size_t      count;
 
@@ -483,6 +486,7 @@ typename vector<T, Alloc>::const_reverse_iterator     vector<T, Alloc>::rend() c
 template < class T, class Alloc >
 void    vector<T, Alloc>::reserve(size_t n)
 {
+    this->check_max_size(n);
     if (n >= this->_capacity)
     {
         T   *temp;
@@ -503,7 +507,7 @@ void    vector<T, Alloc>::reserve(size_t n)
 template < class T, class Alloc >
 void    vector<T, Alloc>::resize(size_t n, value_type val)
 {
-    // cout << "one" << endl;
+    this->check_max_size(n);
     if (n > this->_capacity) // change cap
         this->reserve(std::max(this->_capacity * 2, n));
     if (n < this->_size) // destroy the stuffs
@@ -536,12 +540,6 @@ void    vector<T, Alloc>::swap(vector& x)
     std::swap(this->_capacity, x._capacity);
 }
 
-template < class T, class Alloc >
-void    swap(vector<T, Alloc> &x, vector<T, Alloc> &y)
-{
-    x.swap(y);
-}
-
 /* Operator overloads of vector*/
 
 template < class T, class Alloc >
@@ -555,6 +553,8 @@ typename vector<T, Alloc>::const_reference vector<T, Alloc>::operator[] (size_t 
 {
     return (this->_vector[n]);
 }
+
+
 
 template < class T, class Alloc >
 vector<T, Alloc>    &vector<T, Alloc>::operator=(const vector& x)
@@ -572,39 +572,74 @@ vector<T, Alloc>    &vector<T, Alloc>::operator=(const vector& x)
     return (*this);
 }
 
-template <class T, class Alloc> 
-bool operator==(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+template <class T, class Alloc>
+void	vector<T, Alloc>::check_max_size(size_t n)
 {
-    return((lhs._size == rhs._size) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+    if (n > this->max_size())
+        throw std::length_error("Length error bro");
+    
 }
 
 template <class T, class Alloc>
-bool operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+T* vector<T, Alloc>::data()
 {
-    return(!(lhs == rhs));
+    // if (this->_size == 0)
+        return (this->_vector);
+    // return (this->s);
 }
 
 template <class T, class Alloc>
-bool operator<(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+const T* vector<T, Alloc>::data() const
 {
-    return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-template <class T, class Alloc>
-bool operator<=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-{
-    return (!(rhs < lhs) || (rhs == lhs));
+    // if (this->_size == 0)
+        return (this->_vector);
+    // cout << this->_vector << endl;
+    // cout << this->_vector + 1 << endl;
+    // return (this->_vector + 1);
 }
 
-template <class T, class Alloc>
-bool operator>(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+namespace ft
 {
-    return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-}
-	
-template <class T, class Alloc>
-bool operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-{
-    return (!(rhs > lhs) || (rhs == lhs));
+    template <class T, class Alloc>
+    void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
+    {
+        x.swap(y);
+    }
+
+    template <class T, class Alloc> 
+    bool operator==(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return((lhs._size == rhs._size) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+    }
+
+    template <class T, class Alloc>
+    bool operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return(!(lhs == rhs));
+    }
+
+    template <class T, class Alloc>
+    bool operator<(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    }
+    template <class T, class Alloc>
+    bool operator<=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return (!(rhs < lhs) || (rhs == lhs));
+    }
+
+    template <class T, class Alloc>
+    bool operator>(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+    }
+        
+    template <class T, class Alloc>
+    bool operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
+    {
+        return (!(rhs > lhs) || (rhs == lhs));
+    }
 }
 
 #endif

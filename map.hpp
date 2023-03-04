@@ -7,6 +7,7 @@
 #include "reverseIterator.hpp"
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
+#include <stdexcept>
 #include "equal.hpp"
 #include "pair.hpp"
 #include "styling.h"
@@ -62,7 +63,9 @@ namespace ft
 			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());
 			map (const map& x);
 			~map();
-		
+
+			mapped_type& at (const key_type& k);
+			const mapped_type& at (const key_type& k) const;
 			iterator begin();
 			const_iterator begin() const;
 			void clear();

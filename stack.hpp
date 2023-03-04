@@ -45,7 +45,7 @@ namespace ft
 		
 
 
-			private:
+			// protected:
 				container_type				c;
 
 

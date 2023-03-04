@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 #include "remove_const.hpp"
 #include "vectorIterator.hpp"
 #include "reverseIterator.hpp"
@@ -90,6 +91,10 @@ namespace ft
 			reference				operator[](size_type n);
 			const_reference			operator[](size_type n) const;
 			vector<T, Alloc>&		operator=(const vector& x);
+			void					check_max_size(size_t n);
+			T*						data();
+			const T*				data() const;
+
 
 			    
 			void iwillkilleulee()
@@ -97,12 +102,6 @@ namespace ft
 				for (iterator it = begin(); it != end(); it++)
 					cout << *it << endl;
 			}
-
-		class	MaxAmountReached : public std::exception
-		{
-			public:
-				virtual const char	*what(void) const throw();
-		};
 	};
 
 }

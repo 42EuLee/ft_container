@@ -97,39 +97,8 @@ bool operator<(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& 
 template <class T, class Container> 
 stack<T, Container>		&stack<T, Container>::operator=( const ft::stack<T, Container>& other )
 {
-	this->c = other._stack;
+	this->c = other.c;
+	return (*this);
 }
-
-
-
-// template <class T, class Alloc>
-// bool operator!=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-// {
-//     return(!(lhs == rhs));
-// }
-
-// template <class T, class Alloc>
-// bool operator<(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-// {
-//     return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-// }
-// template <class T, class Alloc>
-// bool operator<=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-// {
-//     return (!(rhs < lhs) || (rhs == lhs));
-// }
-
-// template <class T, class Alloc>
-// bool operator>(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-// {
-//     return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-// }
-	
-// template <class T, class Alloc>
-// bool operator>=(const vector<T,Alloc> &lhs, const vector<T,Alloc> &rhs)
-// {
-//     return (!(rhs > lhs) || (rhs == lhs));
-// }
-
 
 #endif

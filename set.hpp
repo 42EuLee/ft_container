@@ -71,6 +71,8 @@ namespace ft
 			const_iterator find (const key_type& k) const;
 			allocator_type get_allocator() const;
 
+			
+
 
 			pair<iterator,bool> insert (const value_type& val);
 			iterator insert (iterator position, const value_type& val);
@@ -96,6 +98,8 @@ namespace ft
 			iterator upper_bound (const key_type& k);
 			const_iterator upper_bound (const key_type& k) const;
 			value_compare value_comp() const;
+			void check_max_size(size_t n);
+
 
 	};
 }

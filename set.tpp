@@ -335,49 +335,56 @@ set<T, Compare, Alloc> &set<T, Compare, Alloc>::operator=(const set& x)
     return(*this);
 }
 
-template <class Key, class T, class Compare, class Alloc>  
-void swap (set<T,Compare,Alloc>& x, set<T,Compare,Alloc>& y)
-{
-    x.swap(y);
-}
-
 template <class T, class Compare, class Alloc> 
-bool operator==(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+void	set<T, Compare, Alloc>::check_max_size(size_t n)
 {
-    return((lhs.rbt._size == rhs.rbt._size) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+    if (n > this->max_size())
+        throw std::length_error("Length error bro");
+    
 }
 
-template <class T, class Compare, class Alloc> 
-bool operator!=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+namespace ft
 {
-    return(!(lhs == rhs));
+    template <class T, class Compare, class Alloc>  
+    void swap (set<T,Compare,Alloc>& x, set<T,Compare,Alloc>& y)
+    {
+        x.swap(y);
+    }
+
+    template <class T, class Compare, class Alloc> 
+    bool operator==(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return((lhs.rbt._size == rhs.rbt._size) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+    }
+
+    template <class T, class Compare, class Alloc> 
+    bool operator!=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return(!(lhs == rhs));
+    }
+
+    template <class T, class Compare, class Alloc> 
+    bool operator<(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return ((lhs.rbt._size < rhs.rbt._size) && ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    }
+
+    template <class T, class Compare, class Alloc> 
+    bool operator<=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return (!(rhs < lhs));
+    }
+
+    template <class T, class Compare, class Alloc> 
+    bool operator>(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return ((lhs.rbt._size > rhs.rbt._size) && ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+    }
+        
+    template <class T, class Compare, class Alloc> 
+    bool operator>=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
+    {
+        return (!(rhs > lhs));
+    }
 }
-
-template <class T, class Compare, class Alloc> 
-
-bool operator<(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
-{
-    return ((lhs.rbt._size < rhs.rbt._size) && ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-template <class T, class Compare, class Alloc> 
-
-bool operator<=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
-{
-    return (!(rhs < lhs));
-}
-
-template <class T, class Compare, class Alloc> 
-
-bool operator>(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
-{
-    return ((lhs.rbt._size > rhs.rbt._size) && ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
-}
-	
-template <class T, class Compare, class Alloc> 
-
-bool operator>=(const set<T, Compare, Alloc> &lhs, const set<T, Compare, Alloc> &rhs)
-{
-    return (!(rhs > lhs));
-}
-
 #endif
